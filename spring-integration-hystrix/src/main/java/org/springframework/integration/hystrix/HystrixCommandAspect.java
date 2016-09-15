@@ -133,9 +133,9 @@ public class HystrixCommandAspect {
 	 */
 	private HystrixCommand.Setter getCommandSetter(ProceedingJoinPoint joinPoint,
 			com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand cb) {
-		String name = getHystrixGroupName(joinPoint, cb);
-		String groupKey = StringUtils.isEmpty(cb.groupKey()) ? name : cb.groupKey();
-		String commandKey = StringUtils.isEmpty(cb.commandKey()) ? name : cb.commandKey();
+		String groupKey = StringUtils.isEmpty(cb.groupKey()) ? getHystrixGroupKey(joinPoint, cb) : cb.groupKey();
+		String commandKey = StringUtils.isEmpty(cb.commandKey()) ? getHystrixcommandKey(joinPoint, cb) : cb.commandKey();
+		
 		HystrixThreadPoolKey hystrixThreadPoolKey = StringUtils.isEmpty(cb.threadPoolKey()) ? null
 				: HystrixThreadPoolKey.Factory.asKey(cb.threadPoolKey());
 
@@ -149,10 +149,30 @@ public class HystrixCommandAspect {
 				.andThreadPoolPropertiesDefaults(threadPoolPropertiesDefaults);
 	}
 
-	private String getHystrixGroupName(final ProceedingJoinPoint joinPoint,
+	/**
+	 * 表示所属的group，一个group共用线程池 默认类名
+	 * @param joinPoint
+	 * @param cb
+	 * @return
+	 */
+	private String getHystrixGroupKey(final ProceedingJoinPoint joinPoint,
 			com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand cb) {
 		String name = cb.groupKey().length() == 0 ? cb.commandKey() : cb.groupKey();
-		return name.length() == 0 ? joinPoint.getSignature().toShortString() : name;
+		//return name.length() == 0 ? joinPoint.getSignature().toShortString() : name;
+		return name.length() == 0 ? joinPoint.getTarget().getClass().getSimpleName(): name;
+	}
+	
+	/**
+	 * 默认值：当前执行方法名
+	 * @param joinPoint
+	 * @param cb
+	 * @return
+	 */
+	private String getHystrixcommandKey(final ProceedingJoinPoint joinPoint,
+			com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand cb) {
+		Method method = getMethod(joinPoint);
+		String name =method.toGenericString();
+		return name;
 	}
 
 	private HystrixCommandProperties.Setter getHystrixCommandPropertiesSetter(
