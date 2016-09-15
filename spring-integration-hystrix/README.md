@@ -1,5 +1,5 @@
 # CircuitBreaker
-An Spring AOP annotation HystrixCommand using the NetFlix Hystrix circuit breaker (https://github.com/Netflix/Hystrix)
+An Spring AOP annotation HystrixCommand using the NetFlix Hystrix circuit breaker (https://github.com/Netflix/Hystrix,https://github.com/Netflix/Hystrix/wiki/How-To-Use)
 Use
 
     
