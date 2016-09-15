@@ -10,8 +10,7 @@
 
     <context:annotation-config/>
     <aop:aspectj-autoproxy/>
-    <context:component-scan base-package="cn.eakay.services"/>
-    <context:component-scan base-package="cn.eakay.aop.advices"/>
+    <context:component-scan base-package="cn.eakay.service"/>
     
     <aop:aspectj-autoproxy/>
 	<context:component-scan base-package="org.springframework.integration.hystrix"/>
