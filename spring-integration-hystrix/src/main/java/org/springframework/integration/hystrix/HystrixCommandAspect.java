@@ -21,7 +21,6 @@ import com.netflix.hystrix.HystrixCommandProperties;
 import com.netflix.hystrix.HystrixThreadPoolKey;
 import com.netflix.hystrix.HystrixThreadPoolProperties;
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixProperty;
-import com.netflix.hystrix.exception.HystrixRuntimeException;
 
 import jodd.bean.BeanUtil;
 
@@ -34,14 +33,22 @@ public class HystrixCommandAspect {
 		com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand cb = getAnnotation(joinPoint);
 		try {
 			return getHystrixCommand(joinPoint, cb).execute();
-		} catch (HystrixRuntimeException e) {
+		} catch (Throwable e) {
 			return handleException(e, joinPoint, cb);
 		}
 	}
 
-	private Object handleException(HystrixRuntimeException e, ProceedingJoinPoint joinPoint,
+	private Object handleException(Throwable e, ProceedingJoinPoint joinPoint,
 			com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand cb) throws Throwable {
+		
 		if (cb.fallbackMethod().length() > 0) {
+			Class<? extends Throwable>[] throwables = cb.ignoreExceptions();
+			for(Class<? extends Throwable> throwable:throwables){
+				if (throwable == e.getCause().getClass()) {
+					//当遇到BadRequestException时不会进入fallback，而是直接抛出异常
+					throw e.getCause();
+				}
+			}
 			return executeFallback(e, joinPoint, cb);
 		}
 		if (e.getCause() instanceof TimeoutException) {
@@ -53,7 +60,7 @@ public class HystrixCommandAspect {
 		throw e;
 	}
 
-	private Object executeFallback(HystrixRuntimeException e, ProceedingJoinPoint joinPoint,
+	private Object executeFallback(Throwable e, ProceedingJoinPoint joinPoint,
 			com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand cb)
 			throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 		Method method = getMethod(joinPoint);

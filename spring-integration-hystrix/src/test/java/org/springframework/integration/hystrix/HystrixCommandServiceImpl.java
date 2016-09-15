@@ -67,7 +67,7 @@ public class HystrixCommandServiceImpl implements Service {
 	}
 
 	@Override
-	@HystrixCommand(fallbackMethod = "fallback")
+	@HystrixCommand(fallbackMethod = "fallback",ignoreExceptions={MyRuntimeException.class})
 	public String exceptionWithFallback(String s) {
 		throw new MyRuntimeException();
 	}
