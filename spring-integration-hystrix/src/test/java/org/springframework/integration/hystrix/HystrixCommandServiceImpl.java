@@ -71,12 +71,15 @@ public class HystrixCommandServiceImpl implements Service {
 
 	@Override
 	//@HystrixCommand(/*fallbackMethod = "fallback"*//*,ignoreExceptions={MyRuntimeException.class}*/)
-	@HystrixCommand(commandProperties={
+	@HystrixCommand(
+			fallbackMethod = "fallback",
+			commandProperties={
 			//4次异常短路
 			@HystrixProperty(name = "circuitBreakerRequestVolumeThreshold", value = "4"),
 			//5秒后发生重试
 			@HystrixProperty(name = "circuitBreakerSleepWindowInMilliseconds", value = "5000")})
 	public String exceptionWithFallback(String s) {
+		System.out.println("熔断之后讲不会调用该方法>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
 		throw new MyRuntimeException();
 	}
 
