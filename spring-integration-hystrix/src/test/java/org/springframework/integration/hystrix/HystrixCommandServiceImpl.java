@@ -20,7 +20,10 @@ public class HystrixCommandServiceImpl implements Service {
 	 * HystrixThreadPoolProperties.Setter().withMaxQueueSize(int value)
 	 */
 	@Override
-	@HystrixCommand(threadPoolProperties = { @HystrixProperty(name = "coreSize", value = "50"),
+	@HystrixCommand(
+			commandProperties={ @HystrixProperty(name = "executionIsolationStrategy", value = "SEMAPHORE") },
+			
+			threadPoolProperties = { @HystrixProperty(name = "coreSize", value = "50"),
 			@HystrixProperty(name = "maxQueueSize", value = "-1") })
 	public String get(String str) {
 		return str;
@@ -61,13 +64,18 @@ public class HystrixCommandServiceImpl implements Service {
 	}
 
 	@Override
-	@HystrixCommand(commandProperties = { @HystrixProperty(name = "executionIsolationStrategy.", value = "SEMAPHORE") })
+	@HystrixCommand(commandProperties = { @HystrixProperty(name = "executionIsolationStrategy", value = "SEMAPHORE") })
 	public int getNonThreadedThreadThreadId() {
 		return Thread.currentThread().hashCode();
 	}
 
 	@Override
-	@HystrixCommand(fallbackMethod = "fallback",ignoreExceptions={MyRuntimeException.class})
+	//@HystrixCommand(/*fallbackMethod = "fallback"*//*,ignoreExceptions={MyRuntimeException.class}*/)
+	@HystrixCommand(commandProperties={
+			//4次异常短路
+			@HystrixProperty(name = "circuitBreakerRequestVolumeThreshold", value = "4"),
+			//5秒后发生重试
+			@HystrixProperty(name = "circuitBreakerSleepWindowInMilliseconds", value = "5000")})
 	public String exceptionWithFallback(String s) {
 		throw new MyRuntimeException();
 	}

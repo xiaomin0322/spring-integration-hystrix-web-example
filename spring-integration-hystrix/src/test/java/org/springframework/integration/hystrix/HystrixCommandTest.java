@@ -83,7 +83,7 @@ public class HystrixCommandTest {
 
 	@Test
 	public void testThreadPoolProperties() throws Exception {
-		for (int i = 0; i < 10; i++) {
+		for (int i = 0; i < 100; i++) {
 			new Thread(new Runnable() {
 				@Override
 				public void run() {
@@ -95,6 +95,31 @@ public class HystrixCommandTest {
 		}
 
 		Thread.sleep(10000);
+	}
+
+	@Test
+	/**
+	 * 熔断测试
+	 * circuitBreaker.requestVolumeThreshold 熔断触发的最小个数/10s 默认值：20
+	 * circuitBreaker.sleepWindowInMilliseconds 熔断多少秒后去尝试请求 默认值：5000
+	 * circuitBreaker.errorThresholdPercentage 失败率达到多少百分比后熔断 默认值：50
+	 * 主要根据依赖重要性进行调整 circuitBreaker.forceClosed 是否强制关闭熔断 如果是强依赖，应该设置为true 
+	 * @throws MyException
+	 */
+	public void testerrorThresholdPercentage() throws Exception {
+		for (int i = 0; i < 100; i++) {
+			try{
+				
+				System.out.println("index" + i + " : " + service.exceptionWithFallback(TEST_STR));
+			}catch (MyRuntimeException e) {
+				System.out.println("MyRuntimeException=================="+i+" "+e.getMessage());
+			}catch (Exception e) {
+				System.out.println("Exception=================="+i+"   "+e.getMessage());
+			}
+			
+			Thread.sleep(1000);
+			
+		}
 	}
 
 }
