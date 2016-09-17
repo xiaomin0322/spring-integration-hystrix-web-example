@@ -11,4 +11,9 @@
 	<aop:aspectj-autoproxy/>
 	<context:component-scan base-package="org.springframework.integration.hystrix"/>
 
+
+  <!--   <aop:aspectj-autoproxy/>
+    <bean id="hystrixAspect" class="com.netflix.hystrix.contrib.javanica.aop.aspectj.HystrixCommandAspect"/>
+     -->
+
 </beans>
