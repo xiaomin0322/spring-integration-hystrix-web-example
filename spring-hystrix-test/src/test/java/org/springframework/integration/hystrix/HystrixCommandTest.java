@@ -84,11 +84,12 @@ public class HystrixCommandTest {
 
 	@Test
 	public void testThreadPoolProperties() throws Exception {
-		for (int i = 0; i < 11; i++) {
+		for (int i = 0; i < 110; i++) {
 			new Thread(new Runnable() {
 				@Override
 				public void run() {
-					System.out.println(service.get(TEST_STR));
+					//System.out.println(service.get(TEST_STR));
+					System.out.println(service.get2(TEST_STR));
 				}
 			}).start();
 			;

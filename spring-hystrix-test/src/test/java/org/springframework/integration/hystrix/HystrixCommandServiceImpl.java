@@ -24,7 +24,7 @@ public class HystrixCommandServiceImpl implements Service {
 			commandProperties={ @HystrixProperty(name = "execution.isolation.strategy", value = "THREAD") },
 			
 			threadPoolProperties = { @HystrixProperty(name = "coreSize", value = "50"),
-			@HystrixProperty(name = "maxQueueSize", value = "-1") })
+			@HystrixProperty(name = "maxQueueSize", value = "120") })
 	public String get2(String str) {
 		return str;
 	}
