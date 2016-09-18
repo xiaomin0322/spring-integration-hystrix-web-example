@@ -31,6 +31,12 @@ public class HystrixCommandTest {
 	
 	@Test
 	public void getObservable() {
+		
+		 // blocking
+	    assertEquals(TEST_STR, service.getObservable(TEST_STR).toBlocking().single());
+		
+	 // non-blocking 
+	    // - this is a verbose anonymous inner-class approach and doesn't do assertions
 		service.getObservable(TEST_STR).subscribe(new Observer() {
 
 			@Override
@@ -51,7 +57,9 @@ public class HystrixCommandTest {
 			
 		});
 		
-		
+		// non-blocking
+	    // - also verbose anonymous inner-class
+	    // - ignore errors and onCompleted signal
 		
 		service.getObservable(TEST_STR).subscribe(new Action1<String>() {
 		        @Override
