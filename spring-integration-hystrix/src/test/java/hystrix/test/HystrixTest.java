@@ -29,8 +29,11 @@ public class HystrixTest {
 			assertEquals(result1.get(), "Echo: xianlinbox-1");
 			assertEquals(result2.get(), "Echo: xianlinbox-2");
 			assertEquals(result3.get(), "Echo: xianlinbox-3");
-
-			assertEquals(1, HystrixRequestLog.getCurrentRequest().getExecutedCommands().size());
+			
+			System.out.println(HystrixRequestLog.getCurrentRequest().getExecutedCommandsAsString());
+			
+			System.out.println(HystrixRequestLog.getCurrentRequest().getAllExecutedCommands().size());
+			//assertEquals(1, HystrixRequestLog.getCurrentRequest().getExecutedCommands().size());
 		} finally {
 			context.shutdown();
 		}
@@ -45,14 +48,14 @@ public class HystrixTest {
 			}
 			Setter setter = Setter.withGroupKey(HystrixCommandGroupKey.Factory.asKey("EchoGroup"))
 					.andCommandKey(HystrixCommandKey.Factory.asKey("Echo"))
-					//com.netflix.hystrix.HystrixThreadPool 根据key来做线程跟李,为null时默认是withGroupKey
+					//com.netflix.hystrix.HystrixThreadPool 锟斤拷锟斤拷key锟斤拷锟斤拷锟竭程革拷锟斤拷,为null时默锟斤拷锟斤拷withGroupKey
 					//com.netflix.hystrix.HystrixThreadPool.Factory
 					//com.netflix.hystrix.HystrixThreadPool.Factory.getInstance(HystrixThreadPoolKey, Setter)EEEEE
 					.andThreadPoolKey(HystrixThreadPoolKey.Factory.asKey("EchoThreadPool"+i))
 					.andCommandPropertiesDefaults(HystrixCommandProperties.Setter()
 							.withExecutionIsolationStrategy(HystrixCommandProperties.ExecutionIsolationStrategy.THREAD))
 					.andThreadPoolPropertiesDefaults(HystrixThreadPoolProperties.Setter().withCoreSize(size));
-			// 一个实例只能被调用一次
+			// 一锟斤拷实锟斤拷只锟杰憋拷锟斤拷锟斤拷一锟斤拷
 			final ThreadEchoCommand command1 = new ThreadEchoCommand("xianlinbox",setter);
 			System.out.println("getThreadPoolKey:"+command1.getThreadPoolKey().name());
 			
@@ -74,7 +77,7 @@ public class HystrixTest {
 		final ThreadEchoCommand command2 = new ThreadEchoCommand("xianlinbox");
 
 		for (int i = 0; i < 10; i++) {
-			// 一个实例只能被调用一次
+			// 一锟斤拷实锟斤拷只锟杰憋拷锟斤拷锟斤拷一锟斤拷
 			final ThreadEchoCommand command1 = new ThreadEchoCommand("xianlinbox");
 			new Thread(new Runnable() {
 				@Override
