@@ -10,6 +10,7 @@
     <name>spring-integration-hystrix-web-example</name>
 
     <modules>
+	    <module>spring-hystrix-test</module>
         <module>spring-integration-hystrix</module>
         <module>spring-integration-hystrix-web</module>
         <module>hystrix-dashboard</module>
