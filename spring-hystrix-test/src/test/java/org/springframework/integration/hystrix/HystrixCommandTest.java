@@ -11,6 +11,9 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import rx.Observer;
+import rx.functions.Action1;
+
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration({ "classpath:spring/applicationConfig.xml" })
 public class HystrixCommandTest {
@@ -20,6 +23,47 @@ public class HystrixCommandTest {
 	@Qualifier(value = "hystrixCommandServiceImpl")
 	private Service service;
 
+	
+	@Test
+	public void getFuture()throws Exception {
+		System.out.println(service.getFuture(TEST_STR).get());
+	}
+	
+	@Test
+	public void getObservable() {
+		service.getObservable(TEST_STR).subscribe(new Observer() {
+
+			@Override
+			public void onCompleted() {
+				// TODO Auto-generated method stub
+				System.out.println("onCompleted");
+			}
+
+			@Override
+			public void onError(Throwable e) {
+				e.printStackTrace();
+			}
+
+			@Override
+			public void onNext(Object t) {
+				System.out.println("onNext: " + t);
+			}
+			
+		});
+		
+		
+		
+		service.getObservable(TEST_STR).subscribe(new Action1<String>() {
+		        @Override
+		        public void call(String v) {
+		            System.out.println("Action1 onNext: " + v);
+		        }
+
+		    });
+	}
+	
+	
+	
 	@Test
 	public void testHystrix() {
 		assertEquals(TEST_STR, service.get(TEST_STR));

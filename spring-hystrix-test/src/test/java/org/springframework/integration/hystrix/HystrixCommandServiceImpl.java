@@ -1,7 +1,13 @@
 package org.springframework.integration.hystrix;
 
+import java.util.concurrent.Future;
+
+import rx.Observable;
+import rx.Subscriber;
+
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixProperty;
+import com.netflix.hystrix.contrib.javanica.command.AsyncResult;
 
 @org.springframework.stereotype.Service("hystrixCommandServiceImpl")
 public class HystrixCommandServiceImpl implements Service {
@@ -96,5 +102,35 @@ public class HystrixCommandServiceImpl implements Service {
 
 	public Throwable fallbackWithException(String testStr, Throwable t) {
 		return t;
+	}
+
+	@Override
+	@HystrixCommand
+	public Future<String> getFuture(final String str) {
+		return new AsyncResult<String>() {
+			@Override
+			public String invoke() {
+				return str;
+			}
+		};
+	}
+
+	@Override
+	@HystrixCommand
+	public Observable<String> getObservable(final String str) {
+		 return Observable.create(new Observable.OnSubscribe<String>() {
+			@Override
+			public void call(Subscriber<? super String> observer) {
+				 try {
+                     if (!observer.isUnsubscribed()) {
+                         observer.onNext(str);
+                         observer.onCompleted();
+                     }		
+                 } catch (Exception e) {
+                     observer.onError(e);
+                 }
+				
+			}
+         }); 
 	}
 }
