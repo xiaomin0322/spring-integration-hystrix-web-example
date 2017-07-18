@@ -17,19 +17,19 @@ import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
 public class Update {
 	
 	public static void main(String[] args)throws Exception {
-		update2();
+		update3();
 	}
 	
 	
 	public static void update()throws Exception{
 		  ClassPool pool = ClassPool.getDefault();      
-          //获取需要修改的类  
+          //鑾峰彇闇�瑕佷慨鏀圭殑绫�  
           CtClass ct = pool.get("org.springframework.integration.hystrix.HystrixCommandServiceImpl");   
             
-          //获取类里的所有方法  
+          //鑾峰彇绫婚噷鐨勬墍鏈夋柟娉�  
           CtMethod[] cms = ct.getDeclaredMethods();  
           CtMethod cm = cms[1];      
-          System.out.println("方法名称====" + cm.getName());  
+          System.out.println("鏂规硶鍚嶇О====" + cm.getName());  
             
           MethodInfo minInfo = cm.getMethodInfo();  
           
@@ -39,19 +39,19 @@ public class Update {
             
             
           ConstPool cp = minInfo.getConstPool();  
-          //获取注解信息  
+          //鑾峰彇娉ㄨВ淇℃伅  
           AnnotationsAttribute attribute2 = new AnnotationsAttribute(cp, AnnotationsAttribute.visibleTag);  
           Annotation annotation = new Annotation("com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand", cp);  
           
-          //修改名称为unitName的注解  
+          //淇敼鍚嶇О涓簎nitName鐨勬敞瑙�  
           annotation.addMemberValue("groupKey", new StringMemberValue("123", cp));  
           attribute2.setAnnotation(annotation);  
           minInfo.addAttribute(attribute2);  
             
-          //打印修改后方法  
+          //鎵撳嵃淇敼鍚庢柟娉�  
           Annotation annotation2 = attribute2.getAnnotation("com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand");  
           String text = ((StringMemberValue)annotation2.getMemberValue("groupKey")).getValue();  
-          System.out.println("修改后的注解名称===" + text);  
+          System.out.println("淇敼鍚庣殑娉ㄨВ鍚嶇О===" + text);  
           
           com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand command= (HystrixCommand) annotation2.toAnnotationType(Thread.currentThread().getContextClassLoader(), pool);
           
@@ -62,13 +62,13 @@ public class Update {
 	
 	public static HystrixCommand update2()throws Exception{
 		  ClassPool pool = ClassPool.getDefault();      
-        //获取需要修改的类  
+        //鑾峰彇闇�瑕佷慨鏀圭殑绫�  
         CtClass ct = pool.get("org.springframework.integration.hystrix.HystrixCommandServiceImpl");   
           
-        //获取类里的所有方法  
+        //鑾峰彇绫婚噷鐨勬墍鏈夋柟娉�  
         CtMethod[] cms = ct.getDeclaredMethods();  
         CtMethod cm = cms[1];      
-        System.out.println("方法名称====" + cm.getName());  
+        System.out.println("鏂规硶鍚嶇О====" + cm.getName());  
           
         MethodInfo minInfo = cm.getMethodInfo();  
         
@@ -82,23 +82,23 @@ public class Update {
         }*/
         ConstPool cp = minInfo.getConstPool();  
           
-        //打印修改后方法  
+        //鎵撳嵃淇敼鍚庢柟娉�  
         Annotation annotation2 = attribute.getAnnotation("com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand");  
        /* String text = ((StringMemberValue)annotation2.getMemberValue("groupKey")).getValue();  
-        System.out.println("修改后的注解名称===" + text);  */
+        System.out.println("淇敼鍚庣殑娉ㄨВ鍚嶇О===" + text);  */
         System.out.println(annotation2);
         
         
-      //修改名称为unitName的注解  
+      //淇敼鍚嶇О涓簎nitName鐨勬敞瑙�  
       /*  annotation2.addMemberValue("groupKey", new StringMemberValue("123456", cp));  
         attribute.setAnnotation(annotation2);  
         minInfo.addAttribute(attribute); */
         
-        //数组类型注解
+        //鏁扮粍绫诲瀷娉ㄨВ
         ArrayMemberValue arrayMemberValue = new ArrayMemberValue(cp);
         
         List<MemberValue> list = new ArrayList<MemberValue>();
-        //单个注解
+        //鍗曚釜娉ㄨВ
         Annotation annotationHystrixProperty = new Annotation("com.netflix.hystrix.contrib.javanica.annotation.HystrixProperty", cp);  
         annotationHystrixProperty.addMemberValue("name",new StringMemberValue("coreSize", cp));  
         annotationHystrixProperty.addMemberValue("value",new StringMemberValue("200", cp));  
@@ -132,6 +132,86 @@ public class Update {
         
         return command;
         
+	}
+	
+	public static HystrixCommand update3()throws Exception{
+		  ClassPool pool = ClassPool.getDefault();      
+      //鑾峰彇闇�瑕佷慨鏀圭殑绫�  
+      CtClass ct = pool.get("org.springframework.integration.hystrix.HystrixCommandServiceImpl");   
+        
+      //鑾峰彇绫婚噷鐨勬墍鏈夋柟娉�  
+      CtMethod[] cms = ct.getDeclaredMethods();  
+      CtMethod cm = cms[0];      
+      System.out.println("鏂规硶鍚嶇О====" + cm.getName());  
+        
+      MethodInfo minInfo = cm.getMethodInfo();  
+      
+      
+      AnnotationsAttribute attribute = (AnnotationsAttribute) minInfo.getAttribute(AnnotationsAttribute.visibleTag);  
+      
+      /*System.out.println(attribute.getAnnotations().length);
+      
+      for(Annotation a:attribute.getAnnotations()){
+      	System.out.println(a.getClass());
+      }*/
+      ConstPool cp = minInfo.getConstPool();  
+        
+      //鎵撳嵃淇敼鍚庢柟娉�  
+      Annotation annotation2 = attribute.getAnnotation("com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand");  
+     /* String text = ((StringMemberValue)annotation2.getMemberValue("groupKey")).getValue();  
+      System.out.println("淇敼鍚庣殑娉ㄨВ鍚嶇О===" + text);  */
+      System.out.println(annotation2);
+      
+      
+    //淇敼鍚嶇О涓簎nitName鐨勬敞瑙�  
+    /*  annotation2.addMemberValue("groupKey", new StringMemberValue("123456", cp));  
+      attribute.setAnnotation(annotation2);  
+      minInfo.addAttribute(attribute); */
+      
+      //鏁扮粍绫诲瀷娉ㄨВ
+      ArrayMemberValue arrayMemberValue = new ArrayMemberValue(cp);
+      
+      List<MemberValue> list = new ArrayList<MemberValue>();
+      //鍗曚釜娉ㄨВ
+      Annotation annotationHystrixProperty = new Annotation("com.netflix.hystrix.contrib.javanica.annotation.HystrixProperty", cp);  
+      annotationHystrixProperty.addMemberValue("name",new StringMemberValue("execution.isolation.thread.timeoutInMilliseconds", cp));  
+      annotationHystrixProperty.addMemberValue("value",new StringMemberValue("2000", cp));  
+      AnnotationMemberValue annotationMemberValueHystrixProperty = new AnnotationMemberValue(cp);
+      annotationMemberValueHystrixProperty.setValue(annotationHystrixProperty);
+      list.add(annotationMemberValueHystrixProperty);
+      
+      annotationHystrixProperty = new Annotation("com.netflix.hystrix.contrib.javanica.annotation.HystrixProperty", cp);  
+      annotationHystrixProperty.addMemberValue("name",new StringMemberValue("execution.isolation.semaphore.maxConcurrentRequests", cp));  
+      annotationHystrixProperty.addMemberValue("value",new StringMemberValue("200", cp));  
+      annotationMemberValueHystrixProperty = new AnnotationMemberValue(cp);
+      annotationMemberValueHystrixProperty.setValue(annotationHystrixProperty);
+      list.add(annotationMemberValueHystrixProperty);
+      
+      
+      annotationHystrixProperty = new Annotation("com.netflix.hystrix.contrib.javanica.annotation.HystrixProperty", cp);  
+      annotationHystrixProperty.addMemberValue("name",new StringMemberValue("execution.isolation.strategy", cp));  
+      annotationHystrixProperty.addMemberValue("value",new StringMemberValue("SEMAPHORE", cp));  
+      annotationMemberValueHystrixProperty = new AnnotationMemberValue(cp);
+      annotationMemberValueHystrixProperty.setValue(annotationHystrixProperty);
+      list.add(annotationMemberValueHystrixProperty);
+      
+      
+      arrayMemberValue.setValue(list.toArray(new MemberValue[]{}));
+      
+      
+      
+      
+      
+      annotation2.addMemberValue("commandProperties",arrayMemberValue);  
+      attribute.setAnnotation(annotation2);  
+      minInfo.addAttribute(attribute); 
+      
+      com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand command= (HystrixCommand) annotation2.toAnnotationType(Thread.currentThread().getContextClassLoader(), pool);
+      
+      System.out.println(command);
+      
+      return command;
+      
 	}
 
 }

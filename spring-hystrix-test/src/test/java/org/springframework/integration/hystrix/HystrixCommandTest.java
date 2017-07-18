@@ -190,27 +190,49 @@ public class HystrixCommandTest {
 	public void testThreadPoolProperties2() throws Exception {
 		
 		
-		System.out.println("==========================================================");
-		for (int i = 0; i < 150; i++) {
+		for (int i = 0; i < 1; i++) {
 			new Thread(new Runnable() {
 				@Override
 				public void run() {
-					//System.out.println(service.get(TEST_STR));
-					System.out.println(service.get2(TEST_STR));
+					System.out.println(service.get(TEST_STR));
 				}
 			}).start();
 			;
 
 		}
 		Thread.sleep(1000);
-		MetaHolder metaHolder = HystrixCommandAspect.METAHOLDERS.get("get2"); 		
+		MetaHolder metaHolder = HystrixCommandAspect.METAHOLDERS.get("get"); 		
 		// TryableSemaphore _s = executionSemaphorePerCircuit.get(commandKey.name());
-		System.out.println("getDefaultCommandKey=get2=="+metaHolder.getDefaultCommandKey());
+		System.out.println("getDefaultCommandKey=get=="+metaHolder.getDefaultCommandKey());
 		// //榛樿甯︽敞閲婄殑鏂规硶鐨勮繍琛屾椂 绫诲悕  
         //this.threadPoolKey = initThreadPoolKey(threadPoolKey, this.commandGroup, this.properties.executionIsolationThreadPoolKeyOverride().get());
 		System.out.println("getDefaultGroupKey====HystrixCommandServiceImpl"+metaHolder.getDefaultGroupKey());
 		
-		Thread.sleep(100000);
+		Thread.sleep(2000);
+		
+		
+		HystrixCommand command = Update.update3();
+		metaHolder.setHystrixCommand(command);
+		//groupKey只对线程池隔离有效
+		metaHolder.setDefaultGroupKey(metaHolder.getDefaultGroupKey()+"2");
+		//commandKey针对信号量隔离有效
+		metaHolder.setDefaultCommandKey(metaHolder.getDefaultCommandKey()+"aaa");
+		
+		System.out.println("==========================================================");
+		Thread.sleep(1000);
+		for (int i = 0; i < 150; i++) {
+			new Thread(new Runnable() {
+				@Override
+				public void run() {
+					//System.out.println(service.get(TEST_STR));
+					System.out.println(service.get(TEST_STR));
+				}
+			}).start();
+			;
+
+		}
+		Thread.sleep(20000);
+		
 	}
 
 	@Test

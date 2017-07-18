@@ -18,10 +18,16 @@ public class HystrixCommandServiceImpl implements Service {
 	@HystrixCommand(
 			commandProperties={ @HystrixProperty(name = "execution.isolation.strategy", value = "SEMAPHORE"),
 					@HystrixProperty(name = "execution.isolation.thread.timeoutInMilliseconds", value = "2000"),
-					@HystrixProperty(name = "execution.isolation.semaphore.maxConcurrentRequests", value = "10")
+					@HystrixProperty(name = "execution.isolation.semaphore.maxConcurrentRequests", value = "2")
 					}
 			)
 	public String get(String str) {
+		try {
+			Thread.sleep(1000);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		System.out.println("str====="+str);
 		return str;
 	}
 	

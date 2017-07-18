@@ -29,6 +29,14 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 public @interface HystrixCommand {
+	
+	/**
+	 * //groupKey只对线程池隔离有效
+		metaHolder.setDefaultGroupKey(metaHolder.getDefaultGroupKey()+"2");
+		//commandKey针对信号量隔离有效
+		metaHolder.setDefaultCommandKey(metaHolder.getDefaultCommandKey()+"aaa");
+		
+	 */
 
     /**
      * The command group key is used for grouping together commands such as for reporting,
