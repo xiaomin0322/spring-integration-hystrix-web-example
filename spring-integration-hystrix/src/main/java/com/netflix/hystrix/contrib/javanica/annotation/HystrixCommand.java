@@ -35,7 +35,7 @@ public @interface HystrixCommand {
      * alerting, dashboards or team/library ownership.
      * <p/>
      * default => the runtime class name of annotated method
-     *
+     * 默认为类名
      * @return group key
      */
     String groupKey() default "";
@@ -51,7 +51,8 @@ public @interface HystrixCommand {
      *     ...
      *     the command name will be: 'getUserById'
      * </code>
-     *
+     * 默认为方法名称 。信号量隔离使用cmmandKey作为key. 
+     * executionSemaphorePerCircuit.putIfAbsent(commandKey.name(), new TryableSemaphoreActual(properties.executionIsolationSemaphoreMaxConcurrentRequests()));
      * @return command key
      */
     String commandKey() default "";
@@ -59,7 +60,9 @@ public @interface HystrixCommand {
     /**
      * The thread-pool key is used to represent a
      * HystrixThreadPool for monitoring, metrics publishing, caching and other such uses.
-     *
+     * 如果thredaPoolkey为空 则默认为groupKey
+     * 根据threadPoolKey获取线程池对象
+     * HystrixThreadPool.Factory.getInstance(threadPoolKey, threadPoolPropertiesDefaults);
      * @return thread pool key
      */
     String threadPoolKey() default "";
