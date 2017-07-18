@@ -3,6 +3,7 @@ package org.springframework.integration.hystrix;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
+import javassist.Update;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -13,6 +14,10 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import rx.Observer;
 import rx.functions.Action1;
+
+import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
+import com.netflix.hystrix.contrib.javanica.aop.aspectj.HystrixCommandAspect;
+import com.netflix.hystrix.contrib.javanica.command.MetaHolder;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration({ "classpath:spring/applicationConfig.xml" })
@@ -136,7 +141,9 @@ public class HystrixCommandTest {
 
 	@Test
 	public void testThreadPoolProperties() throws Exception {
-		for (int i = 0; i < 110; i++) {
+		
+		
+		for (int i = 0; i < 1; i++) {
 			new Thread(new Runnable() {
 				@Override
 				public void run() {
@@ -147,8 +154,63 @@ public class HystrixCommandTest {
 			;
 
 		}
+		Thread.sleep(1000);
+		MetaHolder metaHolder = HystrixCommandAspect.METAHOLDERS.get("get2"); 		
+		// TryableSemaphore _s = executionSemaphorePerCircuit.get(commandKey.name());
+		System.out.println("getDefaultCommandKey=get2=="+metaHolder.getDefaultCommandKey());
+		// //默认带注释的方法的运行时 类名  
+        //this.threadPoolKey = initThreadPoolKey(threadPoolKey, this.commandGroup, this.properties.executionIsolationThreadPoolKeyOverride().get());
+		System.out.println("getDefaultGroupKey====HystrixCommandServiceImpl"+metaHolder.getDefaultGroupKey());
+		
+		Thread.sleep(2000);
+		
+		
+		HystrixCommand command = Update.update2();
+		metaHolder.setHystrixCommand(command);
+		metaHolder.setDefaultGroupKey(metaHolder.getDefaultGroupKey()+"2");
+		
+		System.out.println("==========================================================");
+		Thread.sleep(1000);
+		for (int i = 0; i < 150; i++) {
+			new Thread(new Runnable() {
+				@Override
+				public void run() {
+					//System.out.println(service.get(TEST_STR));
+					System.out.println(service.get2(TEST_STR));
+				}
+			}).start();
+			;
 
-		Thread.sleep(10000);
+		}
+		Thread.sleep(20000);
+		
+	}
+	
+	@Test
+	public void testThreadPoolProperties2() throws Exception {
+		
+		
+		System.out.println("==========================================================");
+		for (int i = 0; i < 150; i++) {
+			new Thread(new Runnable() {
+				@Override
+				public void run() {
+					//System.out.println(service.get(TEST_STR));
+					System.out.println(service.get2(TEST_STR));
+				}
+			}).start();
+			;
+
+		}
+		Thread.sleep(1000);
+		MetaHolder metaHolder = HystrixCommandAspect.METAHOLDERS.get("get2"); 		
+		// TryableSemaphore _s = executionSemaphorePerCircuit.get(commandKey.name());
+		System.out.println("getDefaultCommandKey=get2=="+metaHolder.getDefaultCommandKey());
+		// //默认带注释的方法的运行时 类名  
+        //this.threadPoolKey = initThreadPoolKey(threadPoolKey, this.commandGroup, this.properties.executionIsolationThreadPoolKeyOverride().get());
+		System.out.println("getDefaultGroupKey====HystrixCommandServiceImpl"+metaHolder.getDefaultGroupKey());
+		
+		Thread.sleep(100000);
 	}
 
 	@Test

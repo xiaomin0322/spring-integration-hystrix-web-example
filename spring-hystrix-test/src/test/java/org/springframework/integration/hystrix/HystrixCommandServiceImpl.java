@@ -27,10 +27,10 @@ public class HystrixCommandServiceImpl implements Service {
 	
 	@Override
 	@HystrixCommand(
-			commandProperties={ @HystrixProperty(name = "execution.isolation.strategy", value = "THREAD") },
+			commandProperties={  @HystrixProperty(name = "execution.isolation.strategy", value = "THREAD") },
 			
-			threadPoolProperties = { @HystrixProperty(name = "coreSize", value = "50"),
-			@HystrixProperty(name = "maxQueueSize", value = "120") })
+			threadPoolProperties = { @HystrixProperty(name = "coreSize", value = "5"),
+			@HystrixProperty(name = "maxQueueSize", value = "20") })
 	public String get2(String str) {
 		return str;
 	}
