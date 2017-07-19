@@ -51,6 +51,7 @@ public class HystrixTest {
 					//com.netflix.hystrix.HystrixThreadPool ����key�����̸߳���,ΪnullʱĬ����withGroupKey
 					//com.netflix.hystrix.HystrixThreadPool.Factory
 					//com.netflix.hystrix.HystrixThreadPool.Factory.getInstance(HystrixThreadPoolKey, Setter)EEEEE
+					//根据threadKey获取对象的线程池隔离对象
 					.andThreadPoolKey(HystrixThreadPoolKey.Factory.asKey("EchoThreadPool"+i))
 					.andCommandPropertiesDefaults(HystrixCommandProperties.Setter()
 							.withExecutionIsolationStrategy(HystrixCommandProperties.ExecutionIsolationStrategy.THREAD))
@@ -62,6 +63,45 @@ public class HystrixTest {
 			new Thread(new Runnable() {
 				@Override
 				public void run() {
+					System.out.println(command1.execute());
+				}
+			}).start();
+		}
+
+		Thread.sleep(10000);
+	}
+	
+	@Test
+	public void testSEMAPHOREUpdateCoreSize() throws Exception {
+		for (int i = 0; i < 50; i++) {
+			Setter setter = Setter.withGroupKey(HystrixCommandGroupKey.Factory.asKey("EchoGroup"))
+					//洗脑量根据commandKey获取信号量隔离对象
+					//.andCommandKey(HystrixCommandKey.Factory.asKey("Echo"+i))
+					.andCommandKey(HystrixCommandKey.Factory.asKey("Echo"))
+					//com.netflix.hystrix.HystrixThreadPool ����key�����̸߳���,ΪnullʱĬ����withGroupKey
+					//com.netflix.hystrix.HystrixThreadPool.Factory
+					//com.netflix.hystrix.HystrixThreadPool.Factory.getInstance(HystrixThreadPoolKey, Setter)EEEEE
+					//根据threadKey获取对象的线程池隔离对象
+					.andThreadPoolKey(HystrixThreadPoolKey.Factory.asKey("EchoThreadPool"))
+					.andCommandPropertiesDefaults(HystrixCommandProperties.Setter()
+							.withExecutionIsolationStrategy(HystrixCommandProperties.ExecutionIsolationStrategy.SEMAPHORE))
+					.andCommandPropertiesDefaults(HystrixCommandProperties.Setter().withExecutionIsolationSemaphoreMaxConcurrentRequests(2))
+					.andCommandPropertiesDefaults(HystrixCommandProperties.Setter().withExecutionIsolationThreadTimeoutInMilliseconds(2000));	
+					//线程池属性不生效
+					//.andThreadPoolPropertiesDefaults(HystrixThreadPoolProperties.Setter().withCoreSize(size));
+			// һ��ʵ��ֻ�ܱ�����һ��
+			final ThreadEchoCommand command1 = new ThreadEchoCommand("xianlinbox",setter);
+			System.out.println("getThreadPoolKey:"+command1.getThreadPoolKey().name());
+			System.out.println("CommandKey:"+command1.getCommandKey().name());
+			
+			new Thread(new Runnable() {
+				@Override
+				public void run() {
+					try {
+						Thread.sleep(1000);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
 					System.out.println(command1.execute());
 				}
 			}).start();
@@ -82,6 +122,7 @@ public class HystrixTest {
 			new Thread(new Runnable() {
 				@Override
 				public void run() {
+					System.out.println("ThreadKey==="+command1.getThreadPoolKey().name());
 					System.out.println(command1.execute());
 				}
 			}).start();
