@@ -88,6 +88,38 @@
     <version>3.21.0-GA</version>
 </dependency>
 
+         <dependency>  
+        <groupId>org.apache.zookeeper</groupId>  
+        <artifactId>zookeeper</artifactId>  
+        <version>3.4.8</version>  
+    </dependency>  
+    <dependency>  
+        <groupId>com.netflix.curator</groupId>  
+        <artifactId>curator-framework</artifactId>  
+        <version>1.2.3</version>  
+    </dependency>  
+    <dependency>  
+        <groupId>com.netflix.curator</groupId>  
+        <artifactId>curator-recipes</artifactId>  
+        <version>1.2.3</version>  
+    </dependency>  
+    <dependency>  
+        <groupId>com.netflix.curator</groupId>  
+        <artifactId>curator-test</artifactId>  
+        <version>1.2.3</version>  
+    </dependency>  
+    <dependency>  
+        <groupId>com.netflix.curator</groupId>  
+        <artifactId>curator-x-discovery</artifactId>  
+        <version>1.2.3</version>  
+    </dependency>  
+    
+    	<dependency>
+				<groupId>com.alibaba</groupId>
+				<artifactId>fastjson</artifactId>
+				<version>1.2.7</version>
+		</dependency>
+
 	</dependencies>
 
 	<build>
