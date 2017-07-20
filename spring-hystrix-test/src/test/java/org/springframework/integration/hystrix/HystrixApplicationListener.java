@@ -62,7 +62,7 @@ public class HystrixApplicationListener implements ApplicationListener<ContextRe
 								String classNodeNamePath = HystrixZKClient.ROOTPATH+"/"+serviceNodeName;
 								HystrixZKClient.appendPresistentNode(classNodeNamePath, classNodeNamePath);
 								// /hystrix/org.springframework.integration.hystrix.hystrixCommandServiceImpl
-								String methodsNodeNamePath = classNodeNamePath+"/method_"+commandVo.getMethodName()+"/"+serverId;
+								String methodsNodeNamePath = classNodeNamePath+"/method_"+commandVo.getMethodName()+"_"+serverId;
 								HystrixZKClient.appendEphemeralNode(methodsNodeNamePath, JSON.toJSONString(commandVo));
 							}
 						}
