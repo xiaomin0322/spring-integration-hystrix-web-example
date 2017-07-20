@@ -3,8 +3,13 @@ package org.springframework.integration.hystrix;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
+
+import java.awt.List;
+
 import javassist.Update;
 
+import org.apache.zookeeper.KeeperException;
+import org.apache.zookeeper.data.Stat;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +19,9 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import rx.Observer;
 import rx.functions.Action1;
+import zk.HystrixZKClient;
 
+import com.alibaba.fastjson.JSON;
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
 import com.netflix.hystrix.contrib.javanica.aop.aspectj.HystrixCommandAspect;
 import com.netflix.hystrix.contrib.javanica.command.MetaHolder;
@@ -80,6 +87,27 @@ public class HystrixCommandTest {
 	@Test
 	public void testHystrix() {
 		assertEquals(TEST_STR, service.get(TEST_STR));
+	}
+	
+	
+	@SuppressWarnings("rawtypes")
+	@Test
+	public void testHystrixZk() {
+		assertEquals(TEST_STR, service.get(TEST_STR));
+		String path = HystrixZKClient.ROOTPATH+"/"+"org.springframework.integration.hystrix.hystrixCommandServiceImpl"+"/172.16.0.26";
+		try {
+			String str = HystrixZKClient.zkServer.getData(path, new Stat());
+			java.util.List list = JSON.parseObject(str, java.util.List.class);
+			for(Object o:list){
+				System.out.println("getZK==="+o);
+			}
+		} catch (KeeperException e) {
+			e.printStackTrace();
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 	}
 
 	@Test
@@ -213,9 +241,9 @@ public class HystrixCommandTest {
 		
 		HystrixCommand command = Update.update3();
 		metaHolder.setHystrixCommand(command);
-		//groupKeyÖ»¶ÔÏß³Ì³Ø¸ôÀëÓÐÐ§
+		//groupKeyÖ»ï¿½ï¿½ï¿½ß³Ì³Ø¸ï¿½ï¿½ï¿½ï¿½ï¿½Ð§
 		metaHolder.setDefaultGroupKey(metaHolder.getDefaultGroupKey()+"2");
-		//commandKeyÕë¶ÔÐÅºÅÁ¿¸ôÀëÓÐÐ§
+		//commandKeyï¿½ï¿½ï¿½ï¿½Åºï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð§
 		metaHolder.setDefaultCommandKey(metaHolder.getDefaultCommandKey()+"aaa");
 		
 		System.out.println("==========================================================");

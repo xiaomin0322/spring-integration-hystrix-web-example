@@ -8,9 +8,11 @@ package zk;
 public class HystrixZKClient {
 
 	public static final String ROOTPATH = "/hystrix";
-	
+	public static ZkServer zkServer = new ZkServerImpl();
+	private static final String hosts = "172.26.11.151:2181";
 	static{
 		try {
+			zkServer.init(hosts);
 			appendPresistentNode(ROOTPATH, ROOTPATH);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -18,8 +20,8 @@ public class HystrixZKClient {
 	}
 
 	public static void appendEphemeralNode(String path, String date) throws Exception {
-		ZkServer zkServer = new ZkServerImpl();
-		zkServer.init(hosts);
+		
+		
 		
 		if (!zkServer.exist(path)) {
 			zkServer.appendEphemeralNode(path, date);
@@ -39,7 +41,7 @@ public class HystrixZKClient {
 		
 	}
 
-	private static final String hosts = "172.26.11.151:2181";
+	
 
 	public static void main(String[] args) throws Exception {
 		appendPresistentNode(ROOTPATH, "123");

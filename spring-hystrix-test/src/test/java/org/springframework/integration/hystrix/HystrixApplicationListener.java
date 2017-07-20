@@ -35,15 +35,16 @@ public class HystrixApplicationListener implements ApplicationListener<ContextRe
 				    Class<?> objClass = AopTargetUtils.getTarget(context.getBean(beanName)).getClass();
 					Method[] methods = objClass
 							.getDeclaredMethods();
+					List<HystrixCommandVo> hystrixCommandVos  = new ArrayList<HystrixCommandVo>();
+					String serviceNodeName = null;
+					String serverId = null;
+					
 					for (Method method : methods) {
-						
-
-						List<HystrixCommandVo> hystrixCommandVos  = new ArrayList<HystrixCommandVo>();
-						String serviceNodeName = null;
-						String serverId = null;
- 						if (method.isAnnotationPresent(HystrixCommand.class)) {
 							HystrixCommand hystrixCommand = method
 									.getAnnotation(HystrixCommand.class);
+							if(hystrixCommand==null){
+								continue;
+							}
 							// do something
 							HystrixCommandVo commandVo = new HystrixCommandVo(hystrixCommand);
 							commandVo.setMethodName(method.getName());
@@ -56,14 +57,14 @@ public class HystrixApplicationListener implements ApplicationListener<ContextRe
 							serverId = commandVo.getServiceIp();
 							System.out.println("注解方法：" + method.getName() + ",====" + commandVo);
 						}
- 						if(serviceNodeName!=null){
- 							String classNodeNamePath = HystrixZKClient.ROOTPATH+"/"+serviceNodeName;
- 							HystrixZKClient.appendPresistentNode(classNodeNamePath, classNodeNamePath);
- 							String methodsNodeNamePath = classNodeNamePath+"/"+ serverId;
- 							HystrixZKClient.appendEphemeralNode(methodsNodeNamePath, JSON.toJSONString(hystrixCommandVos));
- 						}
-					}
-			}
+					
+					if(serviceNodeName!=null){
+							String classNodeNamePath = HystrixZKClient.ROOTPATH+"/"+serviceNodeName;
+							HystrixZKClient.appendPresistentNode(classNodeNamePath, classNodeNamePath);
+							String methodsNodeNamePath = classNodeNamePath+"/"+ serverId;
+							HystrixZKClient.appendEphemeralNode(methodsNodeNamePath, JSON.toJSONString(hystrixCommandVos));
+						}
+			 }
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
