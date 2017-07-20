@@ -101,6 +101,7 @@ public class HystrixCommandTest {
 			for(Object o:list){
 				System.out.println("getZK==="+o);
 			}
+		Thread.sleep(30000);
 		} catch (KeeperException e) {
 			e.printStackTrace();
 		} catch (InterruptedException e) {
