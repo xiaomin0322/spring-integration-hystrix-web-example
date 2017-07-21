@@ -1,5 +1,10 @@
 package zk;
 
+import org.apache.zookeeper.WatchedEvent;
+import org.apache.zookeeper.Watcher;
+import org.apache.zookeeper.Watcher.Event.EventType;
+import org.apache.zookeeper.Watcher.Event.KeeperState;
+
 /**
  * 客户端测试
  * 
@@ -9,10 +14,11 @@ public class HystrixZKClient {
 
 	public static final String ROOTPATH = "/hystrix";
 	public static ZkServer zkServer = new ZkServerImpl();
-	private static final String hosts = "172.26.11.151:2181";
+	private static final String hosts = "localhost:2181";
 	static{
 		try {
 			zkServer.init(hosts);
+			Thread.sleep(3000);
 			appendPresistentNode(ROOTPATH, ROOTPATH);
 		} catch (Exception e) {
 			e.printStackTrace();

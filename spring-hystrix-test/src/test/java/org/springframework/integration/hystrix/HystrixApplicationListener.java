@@ -5,6 +5,12 @@ import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.zookeeper.KeeperException;
+import org.apache.zookeeper.WatchedEvent;
+import org.apache.zookeeper.Watcher;
+import org.apache.zookeeper.Watcher.Event.EventType;
+import org.apache.zookeeper.Watcher.Event.KeeperState;
+import org.apache.zookeeper.data.Stat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
@@ -62,8 +68,52 @@ public class HystrixApplicationListener implements ApplicationListener<ContextRe
 								String classNodeNamePath = HystrixZKClient.ROOTPATH+"/"+serviceNodeName;
 								HystrixZKClient.appendPresistentNode(classNodeNamePath, classNodeNamePath);
 								// /hystrix/org.springframework.integration.hystrix.hystrixCommandServiceImpl
-								String methodsNodeNamePath = classNodeNamePath+"/method_"+commandVo.getMethodName()+"_"+serverId;
+								final String methodsNodeNamePath = classNodeNamePath+"/method_"+commandVo.getMethodName()+"_"+serverId;
 								HystrixZKClient.appendEphemeralNode(methodsNodeNamePath, JSON.toJSONString(commandVo));
+								//注册监听
+								
+								final Watcher watcher =new Watcher() {
+									@Override
+									public void process(WatchedEvent event) {
+										 if (event.getType() == null || "".equals(event.getType())) {  
+						                        return;  
+						                    }  
+										 // 事件类型，状态，和检测的路径
+										   EventType eventType = event.getType();
+										   KeeperState state = event.getState();
+										   String watchPath = event.getPath();
+										   
+										   //System.out.println("回调watcher1实例： 路径" + event.getPath() + " 类型："+ event.getType() +" state :"+state +" watchPath: "+watchPath);
+										   
+										   switch (eventType) {
+										      case NodeCreated:
+										        break;
+										      case NodeDataChanged:
+										    	  try {
+										    		   String rslut = HystrixZKClient.zkServer.getData(watchPath, new Stat());	 
+										    		   //System.out.println("watchPath 节点发生变化===="+watchPath +" 内容："+rslut);
+										    		   HystrixCommandVo commandVo = JSON.parseObject(rslut, HystrixCommandVo.class);
+										    		    
+											         } catch (Exception e) {
+											            e.printStackTrace();
+											         }
+										        break;
+										      case NodeChildrenChanged:
+										        break;
+										       default:
+										         break;
+										       }
+										   
+										   try {
+												HystrixZKClient.zkServer.getData(methodsNodeNamePath, this,new Stat());
+											} catch (Exception e1) {
+												e1.printStackTrace();
+											}
+									}
+								};
+								
+								HystrixZKClient.zkServer.getData(methodsNodeNamePath, watcher,new Stat());
+								
 							}
 						}
 					

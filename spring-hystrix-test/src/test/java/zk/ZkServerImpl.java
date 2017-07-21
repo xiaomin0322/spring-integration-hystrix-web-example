@@ -2,14 +2,16 @@ package zk;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
 
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.WatchedEvent;
 import org.apache.zookeeper.Watcher;
-import org.apache.zookeeper.ZooKeeper;
 import org.apache.zookeeper.Watcher.Event.EventType;
+import org.apache.zookeeper.Watcher.Event.KeeperState;
 import org.apache.zookeeper.ZooDefs.Ids;
+import org.apache.zookeeper.ZooKeeper;
 import org.apache.zookeeper.data.ACL;
 import org.apache.zookeeper.data.Stat;
 
@@ -19,6 +21,8 @@ import org.apache.zookeeper.data.Stat;
  */ 
 public class ZkServerImpl implements ZkServer, Watcher{
 
+	private CountDownLatch connectedSemaphore = new CountDownLatch( 1 );   
+	
  private ZooKeeper zk=null;
  
  /**
@@ -118,6 +122,17 @@ public class ZkServerImpl implements ZkServer, Watcher{
  }
  
  /**
+  * 获取某个节点下的所有子节点 
+  */
+ public List<String> getChildren(String path,Watcher watcher) throws KeeperException,
+   InterruptedException {
+  if(zk!=null){
+   return zk.getChildren(path, watcher);
+  }
+  return null;
+ }
+ 
+ /**
   * 变更设置指定节点上的数据
   */
  public void setData(String path, String data, int version) throws KeeperException,
@@ -139,18 +154,36 @@ public class ZkServerImpl implements ZkServer, Watcher{
   }
         return null;
  }
+ 
+
+ /**
+  * 获取某个znode上的数据     
+  */
+ public String getData(String path,Watcher watcher, Stat stat) throws KeeperException,
+   InterruptedException {
+  if(zk!=null){
+   byte[] b=zk.getData(path, watcher, stat);
+   return new String(b);
+  }
+        return null;
+ }
 
  /**
   * 初始化zookeeper服务地址
   */
  public void init(String hosts) throws IOException {
   zk=new ZooKeeper(hosts, 50000, this);
+  try {
+	connectedSemaphore.await();
+} catch (InterruptedException e) {
+	e.printStackTrace();
+}  
  }
 
  
 
 
-public void process(WatchedEvent event) {
+/*public void process(WatchedEvent event) {
   if(event.getType()==EventType.NodeDataChanged){ //节点数据发生变化触发一下事件
    if(event.getPath()!=null){
     try{
@@ -163,6 +196,15 @@ public void process(WatchedEvent event) {
     
    }
   }
- } 
-
+ } */
+ 
+ 
+ public void process(WatchedEvent event) {
+	   // TODO Auto-generated method stub
+	   if (event.getState() == KeeperState.SyncConnected) {
+	      System.out.println("watcher received event");
+	      connectedSemaphore.countDown();
+	      return;
+	   }
+	}
 }

@@ -34,6 +34,8 @@ public class HystrixCommandVo {
 	
 	private List<Class<? extends Throwable>> ignoreExceptions = null;
 	
+	public HystrixCommandVo(){}
+	
 	
 	public HystrixCommandVo(com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand hystrixCommand){
 		String commandKey = hystrixCommand.commandKey();

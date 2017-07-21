@@ -4,11 +4,10 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 
-import java.awt.List;
+import java.util.List;
 
 import javassist.Update;
 
-import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.data.Stat;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -90,22 +89,35 @@ public class HystrixCommandTest {
 	}
 	
 	
-	@SuppressWarnings("rawtypes")
 	@Test
 	public void testHystrixZk() {
 		assertEquals(TEST_STR, service.get(TEST_STR));
-		String path = HystrixZKClient.ROOTPATH+"/"+"org.springframework.integration.hystrix.hystrixCommandServiceImpl"+"/172.16.0.26";
+		String path = HystrixZKClient.ROOTPATH+"/"+"org.springframework.integration.hystrix.hystrixCommandServiceImpl";
 		try {
-			String str = HystrixZKClient.zkServer.getData(path, new Stat());
-			java.util.List list = JSON.parseObject(str, java.util.List.class);
-			for(Object o:list){
-				System.out.println("getZK==="+o);
+			Thread.sleep(1000);
+			java.util.List<String> strs = HystrixZKClient.zkServer.getChildren(path);
+			for(String o:strs){
+				String nPath = path+"/"+o;
+				if(nPath.contains("/hystrix/org.springframework.integration.hystrix.hystrixCommandServiceImpl/method_get_172.16.0.26")){
+					String s = HystrixZKClient.zkServer.getData(nPath, new Stat());
+					System.out.println("nPath="+nPath+" 更新前 的 values = "+s);
+					HystrixCommandVo commandVo = JSON.parseObject(s, HystrixCommandVo.class);
+					List<org.springframework.integration.hystrix.HystrixPropertyVo> hystrixPropertyVos = commandVo.getCommandProperties();
+					for(HystrixPropertyVo hystrixPropertyVo:hystrixPropertyVos){
+						String name = hystrixPropertyVo.getName();
+						if(name.equalsIgnoreCase("execution.isolation.semaphore.maxConcurrentRequests")){
+							hystrixPropertyVo.setValue("200");
+						}
+					}
+					
+					HystrixZKClient.zkServer.setData(nPath, JSON.toJSONString(commandVo),-1);
+					
+ 					System.out.println("nPath="+nPath+" 更新后的 values = "+commandVo);
+				}
 			}
+			
 		Thread.sleep(30000);
-		} catch (KeeperException e) {
-			e.printStackTrace();
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		

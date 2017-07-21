@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.KeeperException;
+import org.apache.zookeeper.Watcher;
 import org.apache.zookeeper.data.ACL;
 import org.apache.zookeeper.data.Stat;
 
@@ -91,6 +92,10 @@ public interface ZkServer {
      */
     public List<String> getChildren(String path) throws KeeperException, InterruptedException;
     
+    
+    public List<String> getChildren(String path,Watcher watcher) throws KeeperException,
+    InterruptedException ;
+    
     /**
      * 
      * @param path
@@ -101,7 +106,7 @@ public interface ZkServer {
      */
     public String getData(String path, Stat stat) throws KeeperException, InterruptedException;
 
-    
+    public String getData(String path,Watcher watcher, Stat stat) throws KeeperException,InterruptedException;
     /**
      *
      * @param path
