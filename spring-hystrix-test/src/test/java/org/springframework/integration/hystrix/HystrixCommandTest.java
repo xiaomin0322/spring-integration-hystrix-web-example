@@ -112,7 +112,7 @@ public class HystrixCommandTest {
 					
 					HystrixZKClient.zkServer.setData(nPath, JSON.toJSONString(commandVo),-1);
 					
- 					System.out.println("nPath="+nPath+" 更新后的 values = "+commandVo);
+ 					System.out.println("nPath="+nPath+" 更新后的 values = "+JSON.toJSONString(commandVo));
 				}
 			}
 			

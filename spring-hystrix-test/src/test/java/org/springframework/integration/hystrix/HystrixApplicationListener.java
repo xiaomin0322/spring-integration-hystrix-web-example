@@ -5,6 +5,8 @@ import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.List;
 
+import javassist.Update;
+
 import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.WatchedEvent;
 import org.apache.zookeeper.Watcher;
@@ -22,6 +24,8 @@ import zk.HystrixZKClient;
 
 import com.alibaba.fastjson.JSON;
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
+import com.netflix.hystrix.contrib.javanica.aop.aspectj.HystrixCommandAspect;
+import com.netflix.hystrix.contrib.javanica.command.MetaHolder;
 
 @Component
 public class HystrixApplicationListener implements ApplicationListener<ContextRefreshedEvent> {
@@ -93,7 +97,9 @@ public class HystrixApplicationListener implements ApplicationListener<ContextRe
 										    		   String rslut = HystrixZKClient.zkServer.getData(watchPath, new Stat());	 
 										    		   //System.out.println("watchPath 节点发生变化===="+watchPath +" 内容："+rslut);
 										    		   HystrixCommandVo commandVo = JSON.parseObject(rslut, HystrixCommandVo.class);
-										    		    
+										    		   HystrixCommand hystrixCommand = Update.createHystrixCommand(commandVo); 
+										    		   MetaHolder holder=HystrixCommandAspect.METAHOLDERS.get(commandVo.getPackageName()+"."+commandVo.getClassName()+"."+commandVo.getMethodName());
+										    		   holder.setHystrixCommand(hystrixCommand);
 											         } catch (Exception e) {
 											            e.printStackTrace();
 											         }

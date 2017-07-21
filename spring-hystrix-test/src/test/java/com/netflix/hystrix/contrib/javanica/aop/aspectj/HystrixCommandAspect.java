@@ -85,7 +85,9 @@ public class HystrixCommandAspect {
         }
         MetaHolderFactory metaHolderFactory = META_HOLDER_FACTORY_MAP.get(HystrixPointcutType.of(method));
         
-        String methodName = method.getName(); 
+        
+        Class<?> clazz = joinPoint.getTarget().getClass();
+        String methodName = clazz.getPackage().getName() + "." +clazz.getName()+ "." +method.getName(); 
         MetaHolder metaHolder = METAHOLDERS.get(methodName);
 		if (metaHolder == null) {
 			metaHolder = metaHolderFactory.create(joinPoint);
