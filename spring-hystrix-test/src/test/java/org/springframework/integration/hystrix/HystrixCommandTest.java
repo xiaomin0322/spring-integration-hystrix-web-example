@@ -91,7 +91,64 @@ public class HystrixCommandTest {
 	
 	@Test
 	//动态修改限流配置测试
-	public void testHystrixZk() {
+	public void testGet2HystrixZk() {
+		assertEquals(TEST_STR, service.get(TEST_STR));
+		for (int i = 0; i < 100; i++) {
+			new Thread(new Runnable() {
+				@Override
+				public void run() {
+					System.out.println("第一次==="+service.get2(TEST_STR));
+				}
+			}).start();
+			;
+		}
+		String path = HystrixZKClient.ROOTPATH+"/"+"org.springframework.integration.hystrix.HystrixCommandServiceImpl";
+		try {
+			Thread.sleep(1000);
+			java.util.List<String> strs = HystrixZKClient.zkServer.getChildren(path);
+			for(String o:strs){
+				String nPath = path+"/"+o;
+				if(nPath.contains("/hystrix/org.springframework.integration.hystrix.HystrixCommandServiceImpl/method_get2_172.16.0.26")){
+					String s = HystrixZKClient.zkServer.getData(nPath, new Stat());
+					System.out.println("nPath="+nPath+" 更新前 的 values = "+s);
+					HystrixCommandVo commandVo = JSON.parseObject(s, HystrixCommandVo.class);
+					commandVo.setCommandKey("get3333");
+					commandVo.setGroupKey("get3333");
+					List<org.springframework.integration.hystrix.HystrixPropertyVo> hystrixPropertyVos = commandVo.getThreadPoolProperties();
+					for(HystrixPropertyVo hystrixPropertyVo:hystrixPropertyVos){
+						String name = hystrixPropertyVo.getName();
+						if(name.equalsIgnoreCase("coreSize")){
+							hystrixPropertyVo.setValue("200");
+						}
+						if(name.equalsIgnoreCase("maxQueueSize")){
+							hystrixPropertyVo.setValue("200");
+						}
+					}
+					HystrixZKClient.zkServer.setData(nPath, JSON.toJSONString(commandVo),-1);
+				}
+			}
+			
+		Thread.sleep(2000);
+		System.out.println("配置更新开始执行>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+		for (int i = 0; i < 150; i++) {
+			new Thread(new Runnable() {
+				@Override
+				public void run() {
+					System.out.println("第二次==="+service.get2(TEST_STR));
+				}
+			}).start();
+			;
+		}
+		Thread.sleep(30000);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+	}
+	
+	@Test
+	//动态修改限流配置测试
+	public void testGetHystrixZk() {
 		assertEquals(TEST_STR, service.get(TEST_STR));
 		for (int i = 0; i < 150; i++) {
 			new Thread(new Runnable() {
@@ -113,6 +170,7 @@ public class HystrixCommandTest {
 					System.out.println("nPath="+nPath+" 更新前 的 values = "+s);
 					HystrixCommandVo commandVo = JSON.parseObject(s, HystrixCommandVo.class);
 					commandVo.setCommandKey("get3333");
+					commandVo.setGroupKey("get3333");
 					List<org.springframework.integration.hystrix.HystrixPropertyVo> hystrixPropertyVos = commandVo.getCommandProperties();
 					for(HystrixPropertyVo hystrixPropertyVo:hystrixPropertyVos){
 						String name = hystrixPropertyVo.getName();
