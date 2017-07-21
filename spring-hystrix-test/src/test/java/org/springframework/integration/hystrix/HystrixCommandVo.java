@@ -19,6 +19,8 @@ public class HystrixCommandVo {
 	private String projectName = null;
     //服务ip
 	private String serviceIp = null;
+	//class全包名
+	private String classNameAll = null; 
 	
 	private String commandKey = null;
 	
@@ -202,17 +204,30 @@ public class HystrixCommandVo {
 	}
 
 
+	public String getClassNameAll() {
+		return classNameAll;
+	}
+
+
+	public void setClassNameAll(String classNameAll) {
+		this.classNameAll = classNameAll;
+	}
+
+
 	@Override
 	public String toString() {
 		return "HystrixCommandVo [methodName=" + methodName + ", className="
 				+ className + ", packageName=" + packageName + ", projectName="
-				+ projectName + ", serviceIp=" + serviceIp + ", commandKey="
-				+ commandKey + ", groupKey=" + groupKey + ", fallbackMethod="
-				+ fallbackMethod + ", threadPoolKey=" + threadPoolKey
+				+ projectName + ", serviceIp=" + serviceIp + ", classNameAll="
+				+ classNameAll + ", commandKey=" + commandKey + ", groupKey="
+				+ groupKey + ", fallbackMethod=" + fallbackMethod
+				+ ", threadPoolKey=" + threadPoolKey
 				+ ", threadPoolProperties=" + threadPoolProperties
 				+ ", commandProperties=" + commandProperties
 				+ ", ignoreExceptions=" + ignoreExceptions + "]";
 	}
+
+
 
 	
 

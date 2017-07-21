@@ -87,7 +87,7 @@ public class HystrixCommandAspect {
         
         
         Class<?> clazz = joinPoint.getTarget().getClass();
-        String methodName = clazz.getPackage().getName() + "." +clazz.getName()+ "." +method.getName(); 
+        String methodName = clazz.getName()+ "." +method.getName(); 
         MetaHolder metaHolder = METAHOLDERS.get(methodName);
 		if (metaHolder == null) {
 			metaHolder = metaHolderFactory.create(joinPoint);
