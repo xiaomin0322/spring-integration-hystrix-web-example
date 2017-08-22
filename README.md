@@ -89,3 +89,4 @@ private final HystrixProperty requestCacheEnabled;
 HystrixThreadPoolProperties.Setter().withCoreSize(int value)
 /* 配置线程值等待队列长度,默认值:-1 建议值:-1表示不等待直接拒绝,测试表明线程池使用直接决绝策略+ 合适大小的非回缩线程池效率最高.所以不建议修改此值。 当使用非回缩线程池时，queueSizeRejectionThreshold,keepAliveTimeMinutes 参数无效 */
 HystrixThreadPoolProperties.Setter().withMaxQueueSize(int value)
+
